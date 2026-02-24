@@ -1,16 +1,19 @@
-version: "3" 
+version: "3"
 services:
   social-analyzer:
     build: .
+    restart: always
     ports:
       - "9005:9005"
     depends_on:
-      - hub
-    links:
-      - hub
+      hub:
+        condition: service_started
+      firefox:
+        condition: service_started
     entrypoint: npm start -- --docker --grid "http://hub:4444/wd/hub"
   hub:
     image: selenium/hub
+    restart: always
     ports:
       - "4444:4444"
     environment:
@@ -19,9 +22,11 @@ services:
       GRID_TIMEOUT: 6000
   firefox:
     image: selenium/node-firefox
+    restart: always
     container_name: web-automation_firefox
     depends_on:
-      - hub
+      hub:
+        condition: service_started
     environment:
       SE_EVENT_BUS_HOST: hub
       SE_EVENT_BUS_PUBLISH_PORT: 4442
@@ -32,5 +37,3 @@ services:
     ports:
       - "9002:5900"
       - "7900:7900"
-    links:
-      - hub
