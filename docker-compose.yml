@@ -31,5 +31,6 @@ services:
       - /dev/shm:/dev/shm
     ports:
       - "9002:5900"
+      - "7900:7900"
     links:
       - hub
